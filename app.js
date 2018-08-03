@@ -1,26 +1,25 @@
 const express = require("express");
 const app = express();
 const morgan = require('morgan');
-const { db } = require('./models');
-const user = require('./routes/user');
-const wiki = require('./routes/wiki');
+const models = require('./models');
+const wikiRouter = require('./routes/wiki');
 
 app.use(morgan("dev"));
 app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({ extended: false }));
-app.use('/wiki', wiki);
+app.use('/wiki', wikiRouter);
 
-db.authenticate().then(() => {
-    console.log('connected to the database');
-  })
+models.db.authenticate().then(() => {
+  console.log('connected to the database');
+});
 
 const init = async () => {
-  await models.db.sync({force: true});
+  await models.db.sync();
+  models.db.sync();
 
-  const port = 3000;
-  app.listen(port, () => {
-    console.log(`App listening in ${port}`);
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`App listening in ${PORT}`);
   });
 }
-
 init();
